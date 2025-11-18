@@ -1,3 +1,4 @@
+from pathlib import Path
 import shutil
 import tkinter as tk
 from tkinter import ttk
@@ -88,10 +89,11 @@ class Gui():
         self.metaCreated = False
 
         # setting variables to be used when the default is selected
-        self.barcode_filename = ""
+        file_dir = Path(os.path.dirname(os.path.abspath(__file__)))
+        self.barcode_filename = file_dir / "barcode_files" / "barcode96.txt"
         self.custom_barcode_selected = False
         self.custom_barcode_valid = True
-        self.num_chan = 50
+        self.num_chan = 96
         self.tixel_width = .5
         self.ROILocated = False
         self.current_image_id = 0
@@ -310,16 +312,16 @@ class Gui():
         label3.grid(row = 2, column = 0, sticky = "e")
 
         label3a = tk.Label(self.starting_window,
-        text = "bc50v1-24" 
+        text = "barcode96"
         )
         label3a.grid(row = 2, column = 1, sticky="w")        
 
         # label3b = tk.Label(self.starting_window)
         # label3b.grid(row = 2, column = 3, sticky = "w")
 
-        revert_button = tk.Button(self.starting_window, text="Revert to bc50v1-24", bg="red", command=lambda: self.use_barcode1(revert_button, barcode_button))
+        revert_button = tk.Button(self.starting_window, text="Revert to barcode96", bg="red", command=lambda: self.use_barcode1(revert_button, barcode_button))
 
-        barcode_button = tk.Button(self.starting_window, text = "bc50v1-24",bg="grey" ,command = lambda: self.get_barcode_file(barcode_button, revert_button))
+        barcode_button = tk.Button(self.starting_window, text = "barcode96",bg="grey" ,command = lambda: self.get_barcode_file(barcode_button, revert_button))
         barcode_button.grid(row = 2, column = 1, sticky = "w")
 
         label3.grid(row = 2, column = 0, sticky = "e")
@@ -380,10 +382,10 @@ class Gui():
 
     def use_barcode1(self, remove_button, display_button):
         self.custom_barcode_selected = False
-        display_button.config(text = "bc50v1")
+        display_button.config(text = "barcode96")
         remove_button.grid_remove()
         self.custom_barcode_selected = False
-        self.num_chan = 50
+        self.num_chan = 96
 
     def get_barcode_file(self, display_button, revert_button):
         #taking file path
@@ -1412,19 +1414,14 @@ class Gui():
             path = self.folder_selected + "/spatial"
 
         self.position_file["state"] = tk.DISABLED
-        if self.custom_barcode_selected:
-            barcodes = []
-            my_file = open(self.barcode_filename,"r")
-            lines = my_file.readlines()
-            for line in lines:
-                val = line.strip()
-                barcodes.append(val)
-            my_file.close()
-        else:
-            barcodes = []
-            vals = barcode1_var.split("\n")
-            for bar in vals:
-                barcodes.append(bar)
+        barcodes = []
+        print(self.barcode_filename)
+        my_file = open(self.barcode_filename,"r")
+        lines = my_file.readlines()
+        for line in lines:
+            val = line.strip()
+            barcodes.append(val)
+        my_file.close()
 
         filename = path + "/tissue_positions_list.csv"
         self.write_positions_file(filename,barcodes, self.coords, self.tixel_status, 1)
